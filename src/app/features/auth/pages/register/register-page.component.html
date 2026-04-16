@@ -1,0 +1,34 @@
+<section class="auth-wrapper">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Register</mat-card-title>
+      <mat-card-subtitle>Create your account</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+
+        @if (authService.error()) {
+          <p class="error">{{ authService.error() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="authService.loading()">
+          Register
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <a mat-button routerLink="/auth/login">Already have an account? Login</a>
+    </mat-card-actions>
+  </mat-card>
+</section>

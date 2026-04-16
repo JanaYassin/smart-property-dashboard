@@ -1,0 +1,135 @@
+<section class="page-header">
+  <div>
+    <h1>Tenants</h1>
+    <p class="muted">Manage tenant profiles and contact details</p>
+  </div>
+</section>
+
+<section class="tenants-grid">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ editingId() ? 'Edit tenant' : 'Add tenant' }}</mat-card-title>
+      <mat-card-subtitle>Keep contact details up to date</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="tenant-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Full name</mat-label>
+          <input matInput formControlName="full_name" placeholder="e.g. Sarah Ali" />
+          @if (form.controls.full_name.touched && form.controls.full_name.invalid) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" placeholder="name@email.com" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <mat-error>Valid email is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" placeholder="+20 ..." />
+          @if (form.controls.phone.touched && form.controls.phone.invalid) {
+            <mat-error>Phone is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="inactive">Inactive</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="tenantsService.loading()">
+            @if (tenantsService.loading()) {
+              <mat-spinner diameter="18"></mat-spinner>
+            } @else {
+              {{ editingId() ? 'Update' : 'Create' }}
+            }
+          </button>
+          @if (editingId()) {
+            <button mat-button type="button" (click)="resetForm()">Cancel</button>
+          }
+        </div>
+      </form>
+
+      @if (tenantsService.error()) {
+        <p class="error">{{ tenantsService.error() }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>All tenants</mat-card-title>
+      <mat-card-subtitle>{{ tenantsService.tenants().length }} total</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="tenantsService.tenants()">
+          <ng-container matColumnDef="full_name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="name-cell">
+                <div class="name">{{ element.full_name }}</div>
+                <div class="sub">{{ element.email }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Phone</th>
+            <td mat-cell *matCellDef="let element">{{ element.phone }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip class="status-chip" [class]="statusChipClass(element.status)">
+                {{ element.status }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element" class="actions-cell">
+              <button
+                mat-icon-button
+                color="primary"
+                class="action-btn edit-btn"
+                matTooltip="Edit"
+                (click)="edit(element)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                class="action-btn delete-btn"
+                matTooltip="Delete"
+                (click)="remove(element.id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>
