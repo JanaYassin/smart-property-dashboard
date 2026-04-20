@@ -3,76 +3,53 @@
     <h1>Tenants</h1>
     <p class="muted">Manage tenant profiles and contact details</p>
   </div>
+  <button mat-flat-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon>
+    Add tenant
+  </button>
 </section>
 
 <section class="tenants-grid">
-  <mat-card class="form-card">
+  <mat-card class="table-card">
     <mat-card-header>
-      <mat-card-title>{{ editingId() ? 'Edit tenant' : 'Add tenant' }}</mat-card-title>
-      <mat-card-subtitle>Keep contact details up to date</mat-card-subtitle>
+      <mat-card-title>All tenants</mat-card-title>
+      <mat-card-subtitle>{{ filteredTenants().length }} shown</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()" class="tenant-form">
-        <mat-form-field appearance="outline">
-          <mat-label>Full name</mat-label>
-          <input matInput formControlName="full_name" placeholder="e.g. Sarah Ali" />
-          @if (form.controls.full_name.touched && form.controls.full_name.invalid) {
-            <mat-error>Name is required</mat-error>
-          }
+      <div class="filters">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            [value]="searchText()"
+            (input)="searchText.set($any($event.target).value)"
+            placeholder="Search name, email, phone"
+          />
+          <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" placeholder="name@email.com" />
-          @if (form.controls.email.touched && form.controls.email.invalid) {
-            <mat-error>Valid email is required</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
-          <input matInput formControlName="phone" placeholder="+20 ..." />
-          @if (form.controls.phone.touched && form.controls.phone.invalid) {
-            <mat-error>Phone is required</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="status-field">
           <mat-label>Status</mat-label>
-          <mat-select formControlName="status">
+          <mat-select [value]="statusFilter()" (valueChange)="statusFilter.set($event)">
+            <mat-option value="all">All</mat-option>
             <mat-option value="active">Active</mat-option>
             <mat-option value="inactive">Inactive</mat-option>
           </mat-select>
         </mat-form-field>
+      </div>
 
-        <div class="actions">
-          <button mat-flat-button color="primary" type="submit" [disabled]="tenantsService.loading()">
-            @if (tenantsService.loading()) {
-              <mat-spinner diameter="18"></mat-spinner>
-            } @else {
-              {{ editingId() ? 'Update' : 'Create' }}
-            }
-          </button>
-          @if (editingId()) {
-            <button mat-button type="button" (click)="resetForm()">Cancel</button>
-          }
+      @if (tenantsService.loading()) {
+        <div class="loading">
+          <mat-spinner diameter="30"></mat-spinner>
         </div>
-      </form>
-
-      @if (tenantsService.error()) {
-        <p class="error">{{ tenantsService.error() }}</p>
-      }
-    </mat-card-content>
-  </mat-card>
-
-  <mat-card class="table-card">
-    <mat-card-header>
-      <mat-card-title>All tenants</mat-card-title>
-      <mat-card-subtitle>{{ tenantsService.tenants().length }} total</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
+      } @else if (filteredTenants().length === 0) {
+        <div class="empty-state">
+          <mat-icon>groups</mat-icon>
+          <p>No tenants found. Try changing filters or add a new tenant.</p>
+        </div>
+      } @else {
       <div class="table-wrapper">
-        <table mat-table [dataSource]="tenantsService.tenants()">
+        <table mat-table [dataSource]="filteredTenants()">
           <ng-container matColumnDef="full_name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
             <td mat-cell *matCellDef="let element">
@@ -119,7 +96,7 @@
                 color="warn"
                 class="action-btn delete-btn"
                 matTooltip="Delete"
-                (click)="remove(element.id)"
+                (click)="remove(element)"
               >
                 <mat-icon>delete</mat-icon>
               </button>
@@ -130,6 +107,10 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
+      }
+      @if (tenantsService.error()) {
+        <p class="error">{{ tenantsService.error() }}</p>
+      }
     </mat-card-content>
   </mat-card>
 </section>

@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>
+  {{ data.mode === 'create' ? 'Add tenant' : 'Edit tenant' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Full name</mat-label>
+      <input matInput formControlName="full_name" />
+      @if (form.controls.full_name.touched && form.controls.full_name.invalid) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <mat-error>Valid email is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Phone</mat-label>
+      <input matInput formControlName="phone" />
+      @if (form.controls.phone.touched && form.controls.phone.invalid) {
+        <mat-error>Phone is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="active">Active</mat-option>
+        <mat-option value="inactive">Inactive</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()">
+    {{ data.mode === 'create' ? 'Create' : 'Save changes' }}
+  </button>
+</mat-dialog-actions>

@@ -23,3 +23,11 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.snackbar-success .mat-mdc-snack-bar-label {
+  color: #065f46;
+}
+
+.snackbar-error .mat-mdc-snack-bar-label {
+  color: #991b1b;
+}

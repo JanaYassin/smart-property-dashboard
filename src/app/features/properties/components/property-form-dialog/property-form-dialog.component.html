@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>
+  {{ data.mode === 'create' ? 'Add property' : 'Edit property' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Address</mat-label>
+      <input matInput formControlName="address" />
+      @if (form.controls.address.touched && form.controls.address.invalid) {
+        <mat-error>Address is required</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="inline-fields">
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <input matInput formControlName="type" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Rent</mat-label>
+        <input matInput type="number" formControlName="rent" />
+        @if (form.controls.rent.touched && form.controls.rent.invalid) {
+          <mat-error>Rent must be at least 1</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="vacant">Vacant</mat-option>
+        <mat-option value="occupied">Occupied</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()">
+    {{ data.mode === 'create' ? 'Create' : 'Save changes' }}
+  </button>
+</mat-dialog-actions>
